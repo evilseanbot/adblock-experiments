@@ -1,0 +1,48 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+
+function verifyCSS(css) {
+	try {
+		document.querySelectorAll(css); 
+		return true;
+	}
+	 catch(err) { 
+	 	console.log('error')
+	 	return false;
+	}
+}
+
+</script>
+
+<textarea id='cssCheck'>
+</textarea>
+
+<div id='validationField'></div>
+
+<script>
+
+$("#cssCheck").change(function() {
+	var text = $("#cssCheck").val();
+	var lines = text.split("\n");
+	var validationInfo = "";
+    for (i in lines) {
+    	if (lines[i].indexOf("##") != -1) {
+	    	var lineCSS = lines[i].substr(lines[i].indexOf("##") + 2);
+	    	var works = verifyCSS(lineCSS);
+
+	    	alert(works);
+
+	    	if (works) {
+                validationInfo += "<p>" + lineCSS + "|| status: PASSED</p>";
+	    	} else {
+	    		validationInfo += "<p>" + lineCSS + "|| status: FAILED</p>";
+	    	}
+	    	
+	    	//console.log(lineCSS);
+	    	//console.log("valid css: " + verifyCSS(lineCSS));
+	    }
+    }
+    $("#validationField").html(validationInfo);   
+});
+
+</script>
