@@ -1,23 +1,28 @@
-<style>
-</style>
-
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
+<script src="csslint.js"></script>
 
-function verifyCSS(css) {
-	try {
-        $(css);
-		// document.querySelectorAll(css); 
-		return true;
+<script>
+function validSelector(selector) {
+	var result = CSSLint.verify(selector + "{}");
+
+	for (var i in result.messages) {
+		if (result.messages[i].type == "error") {
+			return false;
+		}
 	}
-	 catch(err) { 
-	 	console.log('error')
-	 	return false;
-	}
+
+	return true;
+}
+
+function validAdBlockFilter(rule) {
+    if (rule.indexOf("##") != -1) {
+        return validSelector(rule.substr(rule.indexOf("##") + 2));
+    } else {
+    	return true;
+    }
 }
 
 </script>
-
 <textarea id='cssCheck'>
 </textarea>
 
@@ -32,7 +37,7 @@ $("#cssCheck").change(function() {
     for (i in lines) {
     	if (lines[i].indexOf("##") != -1) {
 	    	var lineCSS = lines[i].substr(lines[i].indexOf("##") + 2);
-	    	var works = verifyCSS(lineCSS);
+	    	var works = validAdBlockFilter(lines[i]);
 
 	    	if (works) {
                 validationInfo += "<p>" + lineCSS + "|| status: PASSED</p>";
@@ -47,6 +52,5 @@ $("#cssCheck").change(function() {
     $("#validationField").html(validationInfo);   
 });
 
-$("<style type='text/css'> .div[data=\"foo\'] </style>").appendTo("head");
 
 </script>
