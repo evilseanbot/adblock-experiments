@@ -1,0 +1,79 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script>
+
+function rulesForCssText (styleContent) {
+    var doc = document.implementation.createHTMLDocument(""),
+        styleElement = document.createElement("style");
+
+   styleElement.textContent = styleContent;
+    // the style will only be parsed once it is added to a document
+    doc.body.appendChild(styleElement);
+
+    return styleElement.sheet.cssRules;
+};
+
+function passesQuerySelector(css) {
+	try {
+		document.querySelectorAll(css); 
+		return true;
+	}
+	 catch(err) { 
+	 	return false;
+	}
+}
+
+function validFilter(filter) {
+
+    if (filter.indexOf("##") != -1) {
+		var selector = filter.substr(filter.indexOf("##") + 2);
+	    
+	    if (passesQuerySelector(selector)) {
+
+			if (rulesForCssText(selector + " {}").length >= 1) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	} else {
+		return true;
+	}
+}
+
+</script>
+
+<textarea id='cssCheck' style='width:800px; height:400px'>
+</textarea>
+
+<div id='validationField'></div>
+
+<script>
+
+$("#cssCheck").change(function() {
+	var text = $("#cssCheck").val();
+	var lines = text.split("\n");
+	var validationInfo = "";
+    for (i in lines) {
+    	if (lines[i].indexOf("##") != -1) {
+	    	var lineCSS = lines[i].substr(lines[i].indexOf("##") + 2);
+	    	var works = validFilter(lines[i]);
+
+	    	if (works) {
+                validationInfo += "<p>" + lineCSS + "|| status: PASSED</p>";
+	    	} else {
+	    		validationInfo += "<p>" + lineCSS + "|| status: FAILED</p>";
+	    	}
+	    	
+	    	//console.log(lineCSS);
+	    	//console.log("valid css: " + verifyCSS(lineCSS));
+	    }
+    }
+    $("#validationField").html(validationInfo);   
+});
+
+$("<style type='text/css'> .div[data=\"foo\'] </style>").appendTo("head");
+
+</script>
